@@ -23,6 +23,11 @@ Resources:
       CodeUri: queue_manager/
       Handler: queue_manager.handler
       Runtime: python3.6
+      Events:
+        InitCatFacts:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 10 * * ? *)
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -44,3 +49,24 @@ Resources:
       CodeUri: catfacts_api/
       Handler: catfacts.getFactHandler
       Runtime: nodejs8.10
+  NotifySubscribers:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: notifier/
+      Handler: notifier.handler
+      Runtime: nodejs8.10
+      Events:
+        CatFactPushedToQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt CatFactsQueue.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                sns:Publish
+              Resource: !Ref CatFactsTopic
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref CatFactsTopic

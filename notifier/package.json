@@ -1,0 +1,14 @@
+{
+  "name": "notifier",
+  "version": "1.0.0",
+  "description": "",
+  "main": "notifier.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cory Kitchens <corykitchens@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.359.0"
+  }
+}
