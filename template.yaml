@@ -70,3 +70,29 @@ Resources:
       Environment:
         Variables:
           SNS_TOPIC_ARN: !Ref CatFactsTopic
+  SubscribeToCatFacts:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: subscription/
+      Handler: subscription.handler
+      Runtime: python3.6
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                sns:Subscribe
+              Resource: !Ref CatFactsTopic
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref CatFactsTopic
+      Events:
+        AddUser:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+Outputs:
+  SubscribeToCatFactsApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/register"
