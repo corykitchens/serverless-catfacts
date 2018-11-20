@@ -1,5 +1,3 @@
-# serverless-catfacts
-Cat facts but serverless
 # Serverless Cat Facts
 
 ### About
