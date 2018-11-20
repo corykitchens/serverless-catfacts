@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Serverless Cat Facts
+    
+Globals:
+    Function:
+        Timeout: 3
+Resources:
+    CatFactsApi:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: catfacts_api/
+        Handler: catfacts.getFactHandler
+        Runtime: nodejs8.10
