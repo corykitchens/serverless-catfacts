@@ -2,14 +2,45 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
     Serverless Cat Facts
-    
+
 Globals:
     Function:
         Timeout: 3
 Resources:
-    CatFactsApi:
-      Type: AWS::Serverless::Function
-      Properties:
-        CodeUri: catfacts_api/
-        Handler: catfacts.getFactHandler
-        Runtime: nodejs8.10
+  CatFactsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      DelaySeconds: 5
+      QueueName: catfactsqueue
+  CatFactsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: catfacts
+      TopicName: catfacts
+  PushCatFactToQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: queue_manager/
+      Handler: queue_manager.handler
+      Runtime: python3.6
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                lambda:InvokeFunction
+              Resource: !GetAtt CatFactsApi.Arn
+            - Effect: Allow
+              Action:
+                sqs:SendMessage
+              Resource: !GetAtt CatFactsQueue.Arn
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref CatFactsQueue
+          CATFACT_FUNCTION: !Ref CatFactsApi
+  CatFactsApi:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: catfacts_api/
+      Handler: catfacts.getFactHandler
+      Runtime: nodejs8.10
